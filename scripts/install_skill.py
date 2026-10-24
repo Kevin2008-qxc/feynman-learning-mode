@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import os
 import shutil
-import tempfile
 from pathlib import Path
 
 
@@ -87,22 +86,31 @@ def copy_skill(
             ignored.add("agents")
         return ignored
 
-    target.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(
-        dir=target.parent,
-        prefix=f".{SKILL_NAME}-install-",
-    ) as temp_dir:
-        staged = Path(temp_dir) / SKILL_NAME
-        shutil.copytree(source, staged, ignore=ignore)
-        for path in staged.rglob("*"):
-            if path.is_symlink():
-                raise ValueError(f"Refusing to install symbolic link: {path}")
+    for path in source.rglob("*"):
+        if path.is_symlink():
+            raise ValueError(f"Refusing to install symbolic link: {path}")
 
+    target.parent.mkdir(parents=True, exist_ok=True)
+    backup: Path | None = None
+    if target.exists():
+        if target.name != SKILL_NAME:
+            raise ValueError(f"Refusing to replace unexpected target: {target}")
+        backup = target.with_name(f".{SKILL_NAME}-backup-{os.getpid()}")
+        if backup.exists():
+            raise FileExistsError(f"Temporary backup already exists: {backup}")
+        os.replace(target, backup)
+
+    try:
+        shutil.copytree(source, target, ignore=ignore)
+    except Exception:
         if target.exists():
-            if target.name != SKILL_NAME:
-                raise ValueError(f"Refusing to replace unexpected target: {target}")
             shutil.rmtree(target)
-        os.replace(staged, target)
+        if backup is not None:
+            os.replace(backup, target)
+        raise
+    else:
+        if backup is not None:
+            shutil.rmtree(backup)
 
     return target
 

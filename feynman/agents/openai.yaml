@@ -1,4 +1,4 @@
 interface:
-  display_name: "费曼学习"
-  short_description: "让 AI 扮演会犯错的好奇新手，用单点追问和小图检查知识缺口"
-  default_prompt: "使用 $feynman 让我讲解一个概念，你扮演会提出一个合理错误猜测的好奇新手。"
+  display_name: "费曼概念强化"
+  short_description: "用单点追问和按需图解，帮助你真正讲清一个基础概念"
+  default_prompt: "使用 $feynman 讲解一个基础概念，你扮演会提出合理错误猜测的好奇新手。"

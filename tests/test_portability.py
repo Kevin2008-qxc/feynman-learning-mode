@@ -46,7 +46,14 @@ class PortableSkillTests(unittest.TestCase):
                 names = sorted(archive.namelist())
                 self.assertEqual(
                     names,
-                    ["SKILL.md", "references/visual-hints.md"],
+                    [
+                        "SKILL.md",
+                        "references/chart-spec.md",
+                        "references/math-figures.md",
+                        "references/visual-hints.md",
+                        "scripts/render_chart.py",
+                        "scripts/render_math_figure.py",
+                    ],
                 )
                 self.assertNotIn("__pycache__", " ".join(names))
                 self.assertFalse(any(name.startswith("agents/") for name in names))
@@ -75,7 +82,11 @@ class PortableSkillTests(unittest.TestCase):
                     [
                         "SKILL.md",
                         "agents/openai.yaml",
+                        "references/chart-spec.md",
+                        "references/math-figures.md",
                         "references/visual-hints.md",
+                        "scripts/render_chart.py",
+                        "scripts/render_math_figure.py",
                     ],
                 )
 
@@ -111,6 +122,15 @@ class PortableSkillTests(unittest.TestCase):
                     self.assertTrue((target / "SKILL.md").is_file())
                     self.assertTrue(
                         (target / "references" / "visual-hints.md").is_file()
+                    )
+                    self.assertTrue(
+                        (target / "references" / "chart-spec.md").is_file()
+                    )
+                    self.assertTrue(
+                        (target / "scripts" / "render_chart.py").is_file()
+                    )
+                    self.assertTrue(
+                        (target / "scripts" / "render_math_figure.py").is_file()
                     )
                     self.assertFalse((target / "agents" / "openai.yaml").exists())
 
