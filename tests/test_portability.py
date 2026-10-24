@@ -25,10 +25,10 @@ class PortableSkillTests(unittest.TestCase):
         }
         self.assertEqual(keys, {"name", "description"})
 
-    def test_workbuddy_archive_has_skill_at_root(self) -> None:
+    def test_portable_archive_has_only_skill_at_root(self) -> None:
         script = ROOT / "scripts" / "package_skill.py"
         with tempfile.TemporaryDirectory() as temp_dir:
-            output = Path(temp_dir) / "feynman-skill.zip"
+            output = Path(temp_dir) / "feynman-skill-portable.zip"
             subprocess.run(
                 [
                     sys.executable,
@@ -44,11 +44,80 @@ class PortableSkillTests(unittest.TestCase):
             )
             with zipfile.ZipFile(output) as archive:
                 names = sorted(archive.namelist())
+                self.assertEqual(names, ["SKILL.md"])
+                self.assertNotIn("__pycache__", " ".join(names))
+
+    def test_codex_archive_can_include_ui_metadata(self) -> None:
+        script = ROOT / "scripts" / "package_skill.py"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "feynman-skill-codex.zip"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(script),
+                    "--source",
+                    str(SKILL_DIR),
+                    "--output",
+                    str(output),
+                    "--include-codex-metadata",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            with zipfile.ZipFile(output) as archive:
                 self.assertEqual(
-                    names,
+                    sorted(archive.namelist()),
                     ["SKILL.md", "agents/openai.yaml"],
                 )
-                self.assertNotIn("__pycache__", " ".join(names))
+
+    def test_domestic_agent_project_installers(self) -> None:
+        script = ROOT / "scripts" / "install_skill.py"
+        expected_roots = {
+            "workbuddy": Path(".workbuddy") / "skills",
+            "deepseek-harness": Path(".dsh") / "skills",
+            "codebuddy": Path(".codebuddy") / "skills",
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            for host, relative_root in expected_roots.items():
+                with self.subTest(host=host):
+                    project = Path(temp_dir) / host
+                    project.mkdir()
+                    subprocess.run(
+                        [
+                            sys.executable,
+                            str(script),
+                            host,
+                            "--scope",
+                            "project",
+                            "--project-dir",
+                            str(project),
+                        ],
+                        check=True,
+                        capture_output=True,
+                        text=True,
+                    )
+                    target = project / relative_root / "feynman"
+                    self.assertTrue((target / "SKILL.md").is_file())
+                    self.assertFalse((target / "agents" / "openai.yaml").exists())
+
+    def test_installer_refuses_overwrite_without_force(self) -> None:
+        script = ROOT / "scripts" / "install_skill.py"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = Path(temp_dir)
+            command = [
+                sys.executable,
+                str(script),
+                "codebuddy",
+                "--scope",
+                "project",
+                "--project-dir",
+                str(project),
+            ]
+            subprocess.run(command, check=True, capture_output=True, text=True)
+            result = subprocess.run(command, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("--force", result.stderr)
 
 
 if __name__ == "__main__":

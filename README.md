@@ -1,6 +1,86 @@
 # 费曼学习模式
 
-一个遵循 Agent Skills 开放格式的费曼学习 Skill：用户当老师，AI 扮演一个好奇但会提出合理错误猜测的新手，通过单点追问帮助用户发现知识缺口。
+面向国内 Agent 优先设计的便携费曼学习 Skill。用户当老师，AI 扮演一个好奇但会提出合理错误猜测的新手，通过单点追问帮助用户发现知识缺口。
+
+## 优先支持
+
+| Agent | 用户级安装位置 | 项目级安装位置 | 触发方式 |
+|---|---|---|---|
+| WorkBuddy | `~/.workbuddy/skills/feynman/` | `.workbuddy/skills/feynman/` | 按描述自动触发，或在已安装 Skill 中选择 |
+| DeepSeek Harness | `~/.dsh/skills/feynman/` | `.dsh/skills/feynman/` | `/feynman` 或按描述自动触发 |
+| CodeBuddy | `~/.codebuddy/skills/feynman/` | `.codebuddy/skills/feynman/` | 按描述自动触发，或在 `/skills` 中确认已加载 |
+| Codex | `~/.codex/skills/feynman/` | `.agents/skills/feynman/` | `$feynman` 或自然语言 |
+| 共享 Agent Skills | `~/.agents/skills/feynman/` | `.agents/skills/feynman/` | 由宿主决定 |
+
+核心 Skill 只使用通用的 `name`、`description` 和 Markdown 指令，不依赖网络、MCP、API Key 或特定宿主的专有字段。`agents/openai.yaml` 仅用于 Codex 界面，不会进入国内 Agent 的便携 ZIP。
+
+## 安装
+
+先克隆仓库：
+
+```bash
+git clone https://github.com/Kevin2008-qxc/feynman-learning-mode.git
+cd feynman-learning-mode
+```
+
+统一安装器默认安装到用户级 Skill 目录：
+
+```bash
+python scripts/install_skill.py workbuddy
+python scripts/install_skill.py deepseek-harness
+python scripts/install_skill.py codebuddy
+```
+
+查看支持列表：
+
+```bash
+python scripts/install_skill.py --list
+```
+
+安装到当前项目：
+
+```bash
+python scripts/install_skill.py workbuddy --scope project
+python scripts/install_skill.py deepseek-harness --scope project
+python scripts/install_skill.py codebuddy --scope project
+```
+
+指定其他项目目录：
+
+```bash
+python scripts/install_skill.py codebuddy --scope project --project-dir D:\MyProject
+```
+
+安装器默认拒绝覆盖已有 Skill。明确需要更新时使用：
+
+```bash
+python scripts/install_skill.py workbuddy --force
+```
+
+它只替换目标目录中的 `feynman` Skill，不修改 Agent 配置、凭据或用户数据。
+
+## WorkBuddy ZIP
+
+WorkBuddy 支持从 ZIP 上传。构建便携包：
+
+```bash
+python scripts/package_skill.py
+```
+
+生成：
+
+```text
+dist/feynman-skill-portable.zip
+```
+
+ZIP 根目录直接包含 `SKILL.md`，不会多套一层 `feynman/`，也不包含 Codex 专属元数据。可在以下位置上传：
+
+```text
+WorkBuddy → 专家 · 技能 · 连接器 → 技能
+→ 添加技能 → 上传技能 → 选择 ZIP
+```
+
+首个公开 Release 会附带同名 ZIP，通常不需要自行构建。
 
 ## 为什么不一样
 
@@ -14,73 +94,6 @@
 - 结束模式后生成简短验收和迁移检查；
 - 遇到危险操作时暂停角色扮演，优先给出安全提醒。
 
-## 多 Agent 兼容
-
-核心 Skill 只使用跨平台通用的 `name`、`description` 和 Markdown 指令，不依赖网络、MCP、脚本或 Codex 专属字段。`agents/openai.yaml` 只负责 Codex 的界面名称和默认提示；其他宿主可以安全忽略它。
-
-截至 2026-10-24，推荐安装位置如下。各 Agent 的路径可能随版本变化，安装前应以其当前文档为准。
-
-| Agent | 用户级安装位置 | 项目级安装位置 | 调用方式 |
-|---|---|---|---|
-| Codex | `~/.codex/skills/feynman/` 或 `~/.agents/skills/feynman/` | `.agents/skills/feynman/` | `$feynman` 或自然语言 |
-| WorkBuddy | `~/.workbuddy/skills/feynman/` | `.workbuddy/skills/feynman/` | 已安装 Skill 中选择，或使用费曼触发语 |
-| DeepSeek Harness | `~/.dsh/skills/feynman/` 或 `~/.agents/skills/feynman/` | `.dsh/skills/feynman/` 或 `.agents/skills/feynman/` | `/feynman` 或自然语言 |
-| Claude Code | `~/.claude/skills/feynman/` | `.claude/skills/feynman/` | `/feynman` 或自然语言 |
-| Cursor | `~/.cursor/skills/feynman/` 或 `~/.agents/skills/feynman/` | `.cursor/skills/feynman/` 或 `.agents/skills/feynman/` | 自然语言；不同版本也支持斜杠调用 |
-| GitHub Copilot / VS Code | `~/.agents/skills/feynman/` 或宿主指定目录 | `.github/skills/feynman/` 或 `.agents/skills/feynman/` | 自然语言或斜杠调用 |
-
-若不希望记住各平台目录，可以优先安装到共享的 `~/.agents/skills/feynman/`；支持该约定的宿主会直接发现它。
-
-### Codex
-
-#### Windows PowerShell
-
-```powershell
-git clone https://github.com/Kevin2008-qxc/feynman-learning-mode.git
-New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex\skills" | Out-Null
-Copy-Item -Recurse -Force ".\feynman-learning-mode\feynman" "$env:USERPROFILE\.codex\skills\"
-```
-
-#### macOS / Linux
-
-```bash
-git clone https://github.com/Kevin2008-qxc/feynman-learning-mode.git
-mkdir -p ~/.codex/skills
-cp -R ./feynman-learning-mode/feynman ~/.codex/skills/
-```
-
-### WorkBuddy
-
-WorkBuddy 可以导入 ZIP，或从本地技能目录发现 Skill。先构建符合 WorkBuddy 要求的压缩包：
-
-```bash
-python scripts/package_skill.py
-```
-
-生成的 `dist/feynman-skill.zip` 会把 `SKILL.md` 放在压缩包根目录，而不是多套一层 `feynman/`。然后在 WorkBuddy 中打开“专家 · 技能 · 连接器 → 技能 → 添加技能 → 上传技能”，选择该 ZIP。
-
-也可以直接复制目录：
-
-```powershell
-New-Item -ItemType Directory -Force "$env:USERPROFILE\.workbuddy\skills" | Out-Null
-Copy-Item -Recurse -Force ".\feynman-learning-mode\feynman" "$env:USERPROFILE\.workbuddy\skills\"
-```
-
-### DeepSeek Harness
-
-DeepSeek Harness 原生支持目录形式的 `SKILL.md`。将 `feynman` 目录复制到 `~/.dsh/skills/` 或共享的 `~/.agents/skills/`，然后使用 `/feynman` 或直接以“费曼”开始任务。
-
-```powershell
-New-Item -ItemType Directory -Force "$env:USERPROFILE\.dsh\skills" | Out-Null
-Copy-Item -Recurse -Force ".\feynman-learning-mode\feynman" "$env:USERPROFILE\.dsh\skills\"
-```
-
-不同 Agent 的入口不同，但核心触发语一致：
-
-```text
-费曼：卷积
-```
-
 ## 使用
 
 ```text
@@ -90,8 +103,6 @@ Copy-Item -Recurse -Force ".\feynman-learning-mode\feynman" "$env:USERPROFILE\.d
 ```text
 费曼，我来讲 PID 为什么能减小稳态误差。
 ```
-
-在 Codex 中还可以使用 `$feynman`；DeepSeek Harness 和部分其他宿主可使用 `/feynman`。
 
 只输入“费曼”时，AI 会先询问今天想教什么。
 
@@ -113,7 +124,7 @@ Copy-Item -Recurse -Force ".\feynman-learning-mode\feynman" "$env:USERPROFILE\.d
 
 这个 Skill 不依赖网络、API Key、MCP 或外部服务。默认不读取无关文件，不把学习内容写入文件，也不自动写入长期记忆；只有用户明确要求时才执行这些操作。
 
-仓库不会附带 Codex、CC Switch、DeepSeek 或 GitHub 的配置文件。安装时只复制 `feynman/` Skill 目录，不需要提供 API Key，也不依赖 GitHub Actions Secret。
+仓库不会附带 Codex、CC Switch、DeepSeek、CodeBuddy 或 WorkBuddy 的配置文件。安装时只复制 `feynman/` Skill 目录，不需要提供 API Key。
 
 ## 测试
 
@@ -121,9 +132,17 @@ Copy-Item -Recurse -Force ".\feynman-learning-mode\feynman" "$env:USERPROFILE\.d
 python -m unittest discover -s tests -v
 ```
 
-测试检查触发范围、单点追问、错误猜测标记、安全与隐私边界、退出验收、UI 元数据、上下文体积和 UTF-8 编码。
+测试覆盖：
 
-测试还会验证可移植 frontmatter，以及 WorkBuddy ZIP 中的 `SKILL.md` 是否位于压缩包根目录。
+- 触发范围与排除条件；
+- 单点追问和错误猜测标记；
+- 安全与运行时隐私边界；
+- 退出验收与迁移检查；
+- 可移植 frontmatter；
+- WorkBuddy 便携 ZIP 结构；
+- DeepSeek Harness、CodeBuddy、WorkBuddy 安装路径；
+- 防止无授权覆盖已有 Skill；
+- UTF-8 编码与上下文体积。
 
 ## 目录结构
 
@@ -137,17 +156,20 @@ feynman-learning-mode/
 │   ├── test_feynman_skill.py
 │   └── test_portability.py
 ├── scripts/
+│   ├── install_skill.py
 │   └── package_skill.py
 ├── .gitattributes
 ├── .gitignore
-└── LICENSE
+├── LICENSE
+└── README.md
 ```
 
 ## 兼容性依据
 
 - [WorkBuddy Skills 文档](https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market)
-- [DeepSeek Harness Skill 能力源码说明](https://github.com/deepseek-ai/deepseek-harness/tree/master/packages/skill)
-- [Cursor Agent Skills 文档](https://cursor.com/docs/skills)
+- [WorkBuddy Skill ZIP 打包说明](https://github.com/sandbaseai/workbuddy-skill/blob/main/docs/quickstart.md)
+- [DeepSeek Harness Skill 文件系统源码](https://github.com/deepseek-ai/deepseek-harness/tree/master/packages/skill/skill-filesystem)
+- [CodeBuddy CLI Skills 文档](https://www.codebuddy.ai/docs/zh/cli/skills)
 
 ## License
 

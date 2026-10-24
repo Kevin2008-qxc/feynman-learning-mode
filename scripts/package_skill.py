@@ -7,12 +7,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = ROOT / "feynman"
-DEFAULT_OUTPUT = ROOT / "dist" / "feynman-skill.zip"
+DEFAULT_OUTPUT = ROOT / "dist" / "feynman-skill-portable.zip"
 EXCLUDED_NAMES = {"__pycache__", ".DS_Store"}
 EXCLUDED_SUFFIXES = {".pyc", ".pyo"}
 
 
-def build_skill_package(source: Path, output: Path) -> Path:
+def build_skill_package(
+    source: Path,
+    output: Path,
+    include_codex_metadata: bool = False,
+) -> Path:
     source = source.resolve()
     output = output.resolve()
     skill_file = source / "SKILL.md"
@@ -28,6 +32,10 @@ def build_skill_package(source: Path, output: Path) -> Path:
         if path.is_file()
         and not any(part in EXCLUDED_NAMES for part in path.parts)
         and path.suffix not in EXCLUDED_SUFFIXES
+        and (
+            include_codex_metadata
+            or "agents" not in path.relative_to(source).parts
+        )
     )
     for path in files:
         if path.is_symlink():
@@ -52,12 +60,21 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument(
+        "--include-codex-metadata",
+        action="store_true",
+        help="Include the optional agents/openai.yaml Codex UI metadata.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    archive = build_skill_package(args.source, args.output)
+    archive = build_skill_package(
+        args.source,
+        args.output,
+        include_codex_metadata=args.include_codex_metadata,
+    )
     print(archive)
 
 
