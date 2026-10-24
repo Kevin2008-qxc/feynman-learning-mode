@@ -111,6 +111,7 @@ WorkBuddy → 专家 · 技能 · 连接器 → 技能
 - 用户通过纠正 AI 暴露自己的知识断点；
 - AI 不主动抢走完整答案，也不一次抛出问题清单；
 - 连续卡住三轮后提供换例子、最小提示或暂停的选择；
+- 在关系、曲线或反例仅靠文字难讲清时，按需给出一张小而清晰的提示图；
 - 结束模式后生成简短验收和迁移检查；
 - 遇到危险操作时暂停角色扮演，优先给出安全提醒。
 
@@ -156,6 +157,7 @@ python -m unittest discover -s tests -v
 
 - 触发范围与排除条件；
 - 单点追问和错误猜测标记；
+- 条件式可视化提示及无绘图工具时的回退方案；
 - 安全与运行时隐私边界；
 - 退出验收与迁移检查；
 - 可移植 frontmatter；
@@ -170,8 +172,10 @@ python -m unittest discover -s tests -v
 feynman-learning-mode/
 ├── feynman/
 │   ├── SKILL.md
-│   └── agents/
-│       └── openai.yaml
+│   ├── agents/
+│   │   └── openai.yaml
+│   └── references/
+│       └── visual-hints.md
 ├── tests/
 │   ├── test_feynman_skill.py
 │   └── test_portability.py

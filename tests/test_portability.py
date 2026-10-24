@@ -25,7 +25,7 @@ class PortableSkillTests(unittest.TestCase):
         }
         self.assertEqual(keys, {"name", "description"})
 
-    def test_portable_archive_has_only_skill_at_root(self) -> None:
+    def test_portable_archive_has_skill_at_root(self) -> None:
         script = ROOT / "scripts" / "package_skill.py"
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "feynman-skill-portable.zip"
@@ -44,8 +44,12 @@ class PortableSkillTests(unittest.TestCase):
             )
             with zipfile.ZipFile(output) as archive:
                 names = sorted(archive.namelist())
-                self.assertEqual(names, ["SKILL.md"])
+                self.assertEqual(
+                    names,
+                    ["SKILL.md", "references/visual-hints.md"],
+                )
                 self.assertNotIn("__pycache__", " ".join(names))
+                self.assertFalse(any(name.startswith("agents/") for name in names))
 
     def test_codex_archive_can_include_ui_metadata(self) -> None:
         script = ROOT / "scripts" / "package_skill.py"
@@ -68,7 +72,11 @@ class PortableSkillTests(unittest.TestCase):
             with zipfile.ZipFile(output) as archive:
                 self.assertEqual(
                     sorted(archive.namelist()),
-                    ["SKILL.md", "agents/openai.yaml"],
+                    [
+                        "SKILL.md",
+                        "agents/openai.yaml",
+                        "references/visual-hints.md",
+                    ],
                 )
 
     def test_domestic_agent_project_installers(self) -> None:
@@ -101,6 +109,9 @@ class PortableSkillTests(unittest.TestCase):
                     )
                     target = project / relative_root / "feynman"
                     self.assertTrue((target / "SKILL.md").is_file())
+                    self.assertTrue(
+                        (target / "references" / "visual-hints.md").is_file()
+                    )
                     self.assertFalse((target / "agents" / "openai.yaml").exists())
 
     def test_installer_refuses_overwrite_without_force(self) -> None:

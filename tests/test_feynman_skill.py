@@ -9,6 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SKILL_DIR = ROOT / "feynman"
 SKILL_TEXT = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
 UI_TEXT = (SKILL_DIR / "agents" / "openai.yaml").read_text(encoding="utf-8")
+VISUAL_TEXT = (SKILL_DIR / "references" / "visual-hints.md").read_text(
+    encoding="utf-8"
+)
 
 
 class FeynmanSkillContractTests(unittest.TestCase):
@@ -46,9 +49,18 @@ class FeynmanSkillContractTests(unittest.TestCase):
         self.assertIn("\u4e0d\u5199\u5165\u957f\u671f\u8bb0\u5fc6", SKILL_TEXT)
         self.assertIn("\u4e0d\u8bfb\u53d6\u65e0\u5173\u6587\u4ef6", SKILL_TEXT)
 
+    def test_visual_hints_are_conditional_and_inquiry_driven(self) -> None:
+        self.assertIn("references/visual-hints.md", SKILL_TEXT)
+        self.assertIn("\u6bcf\u6b21\u6700\u591a\u4e00\u5f20\u56fe", SKILL_TEXT)
+        self.assertIn("\u56fe\u540e\u53ea\u95ee\u4e00\u4e2a\u89e3\u91ca\u6027\u95ee\u9898", SKILL_TEXT)
+        self.assertIn("\u4e0d\u662f\u5b8c\u6574\u7b54\u6848", VISUAL_TEXT)
+        self.assertIn("Mermaid", VISUAL_TEXT)
+        self.assertIn("\u793a\u610f\u56fe", VISUAL_TEXT)
+
     def test_ui_metadata_invokes_skill_explicitly(self) -> None:
         self.assertIn('display_name: "\u8d39\u66fc\u5b66\u4e60"', UI_TEXT)
         self.assertIn("$feynman", UI_TEXT)
+        self.assertIn("\u5c0f\u56fe", UI_TEXT)
 
     def test_skill_stays_within_context_budget(self) -> None:
         self.assertLess(len(SKILL_TEXT.splitlines()), 500)

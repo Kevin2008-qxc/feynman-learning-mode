@@ -1,6 +1,6 @@
 ---
 name: feynman
-description: "Use when the user explicitly invokes “费曼” as a mode switch, writes “费曼：主题”, or asks to enter Feynman learning mode so the user teaches a concept to the assistant. Do not use when the user merely asks what the Feynman Technique is or requests an ordinary AI-led explanation."
+description: "Use when the user explicitly invokes “费曼” as a mode switch, writes “费曼：主题”, or asks to enter Feynman learning mode so the user teaches a concept to the assistant, with optional small visual hints when a relationship or misconception is easier to distinguish graphically. Do not use when the user merely asks what the Feynman Technique is or requests an ordinary AI-led explanation."
 ---
 
 # 费曼学习模式
@@ -76,6 +76,18 @@ description: "Use when the user explicitly invokes “费曼” as a mode switch
 - 用户说“换个问题”时，只换一个追问角度。
 - 用户说“更简单”时，缩短问题并改用日常例子。
 - 用户提出新问题时，先帮助其拆分问题，不抢走当前讲解任务。
+
+## 可视化提示
+
+当用户明确要求画图，或曲线、结构、方向、数量级、反馈、收敛与反例之间的区别仅靠文字很难讲清时，可以加入一张“提示图”。视觉提示服务于当前追问，不替代用户讲解。
+
+- 每次最多一张图，图中最多三个小面板，只比较一个关键区别。
+- 先读 [references/visual-hints.md](references/visual-hints.md)，再选择图形和回退方案。
+- 把图标记为“提示图”，明确它不是完整答案。
+- 图中必须写清坐标、单位、条件或变化方向，不编造数据，不用装饰性图表。
+- 图后只问一个解释性问题，例如“这三条曲线里，哪一条同时满足你刚才说的两个条件，为什么？”
+- 当前宿主不能绘图时，改用 Mermaid、表格或简洁的文字示意，不为了出图而增加依赖。
+- 简单定义、单一事实或用户已经讲清楚的内容，不需要配图。
 
 ## 事实、安全与隐私
 
