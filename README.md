@@ -1,18 +1,23 @@
 # 费曼学习模式
 
-面向国内 Agent 优先设计的便携费曼学习 Skill。用户当老师，AI 扮演一个好奇但会提出合理错误猜测的新手，通过单点追问帮助用户发现知识缺口。
+面向国内 AI 软件优先设计的便携费曼学习 Skill。用户当老师，AI 扮演一个好奇但会提出合理错误猜测的新手，通过单点追问帮助用户发现知识缺口。
 
 ## 优先支持
 
 | Agent | 用户级安装位置 | 项目级安装位置 | 触发方式 |
 |---|---|---|---|
 | WorkBuddy | `~/.workbuddy/skills/feynman/` | `.workbuddy/skills/feynman/` | 按描述自动触发，或在已安装 Skill 中选择 |
+| 豆包工作 | 客户端“上传技能” | 不适用 | 输入 `/` 或 `@` 选择，或按描述自动触发 |
 | DeepSeek Harness | `~/.dsh/skills/feynman/` | `.dsh/skills/feynman/` | `/feynman` 或按描述自动触发 |
+| ZCode | `~/.zcode/skills/feynman/` | `.zcode/skills/feynman/` | `$feynman`、斜杠菜单或按描述自动触发 |
+| Kimi Code CLI | `~/.kimi/skills/feynman/` | `.kimi/skills/feynman/` | `/skill:feynman` 或按描述自动触发 |
 | CodeBuddy | `~/.codebuddy/skills/feynman/` | `.codebuddy/skills/feynman/` | 按描述自动触发，或在 `/skills` 中确认已加载 |
 | Codex | `~/.codex/skills/feynman/` | `.agents/skills/feynman/` | `$feynman` 或自然语言 |
 | 共享 Agent Skills | `~/.agents/skills/feynman/` | `.agents/skills/feynman/` | 由宿主决定 |
 
 核心 Skill 只使用通用的 `name`、`description` 和 Markdown 指令，不依赖网络、MCP、API Key 或特定宿主的专有字段。`agents/openai.yaml` 仅用于 Codex 界面，不会进入国内 Agent 的便携 ZIP。
+
+“豆包工作”支持本地导入；“Kimi”一行专指支持 `SKILL.md` 的 Kimi Code CLI，不代表 Kimi 普通聊天客户端一定支持本地 Skill 目录。
 
 ## 安装
 
@@ -29,6 +34,8 @@ cd feynman-learning-mode
 python scripts/install_skill.py workbuddy
 python scripts/install_skill.py deepseek-harness
 python scripts/install_skill.py codebuddy
+python scripts/install_skill.py zcode
+python scripts/install_skill.py kimi
 ```
 
 查看支持列表：
@@ -43,6 +50,8 @@ python scripts/install_skill.py --list
 python scripts/install_skill.py workbuddy --scope project
 python scripts/install_skill.py deepseek-harness --scope project
 python scripts/install_skill.py codebuddy --scope project
+python scripts/install_skill.py zcode --scope project
+python scripts/install_skill.py kimi --scope project
 ```
 
 指定其他项目目录：
@@ -59,7 +68,7 @@ python scripts/install_skill.py workbuddy --force
 
 它只替换目标目录中的 `feynman` Skill，不修改 Agent 配置、凭据或用户数据。
 
-## WorkBuddy ZIP
+## 客户端上传：WorkBuddy 与豆包工作
 
 WorkBuddy 支持从 ZIP 上传。构建便携包：
 
@@ -73,12 +82,23 @@ python scripts/package_skill.py
 dist/feynman-skill-portable.zip
 ```
 
-ZIP 根目录直接包含 `SKILL.md`，不会多套一层 `feynman/`，也不包含 Codex 专属元数据。可在以下位置上传：
+ZIP 根目录直接包含 `SKILL.md`，不会多套一层 `feynman/`，也不包含 Codex 专属元数据。
+
+WorkBuddy 上传位置：
 
 ```text
 WorkBuddy → 专家 · 技能 · 连接器 → 技能
 → 添加技能 → 上传技能 → 选择 ZIP
 ```
+
+豆包工作上传位置：
+
+```text
+豆包客户端 → 插件 · 技能 · 伙伴 → 技能
+→ + 添加 → 上传技能 → 选择 ZIP 或解压后的文件夹
+```
+
+如果当前豆包版本不接收 ZIP，就解压后上传根目录包含 `SKILL.md` 的 `feynman` 文件夹。安装后可在输入框输入 `/` 或 `@` 查找 `费曼学习`，也可以直接描述学习需求让系统匹配。
 
 首个公开 Release 会附带同名 ZIP，通常不需要自行构建。
 
@@ -140,7 +160,7 @@ python -m unittest discover -s tests -v
 - 退出验收与迁移检查；
 - 可移植 frontmatter；
 - WorkBuddy 便携 ZIP 结构；
-- DeepSeek Harness、CodeBuddy、WorkBuddy 安装路径；
+- DeepSeek Harness、CodeBuddy、WorkBuddy、ZCode、Kimi Code 安装路径；
 - 防止无授权覆盖已有 Skill；
 - UTF-8 编码与上下文体积。
 
@@ -168,8 +188,11 @@ feynman-learning-mode/
 
 - [WorkBuddy Skills 文档](https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market)
 - [WorkBuddy Skill ZIP 打包说明](https://github.com/sandbaseai/workbuddy-skill/blob/main/docs/quickstart.md)
+- [豆包工作技能帮助](https://www.doubao.com/work/docs/zh-cn/articles/081010973544-skills)
 - [DeepSeek Harness Skill 文件系统源码](https://github.com/deepseek-ai/deepseek-harness/tree/master/packages/skill/skill-filesystem)
 - [CodeBuddy CLI Skills 文档](https://www.codebuddy.ai/docs/zh/cli/skills)
+- [ZCode Skill 文档](https://zcode.z.ai/en/docs/skill)
+- [Kimi Code CLI Agent Skills 文档](https://www.kimi-cli.com/en/customization/skills.html)
 
 ## License
 

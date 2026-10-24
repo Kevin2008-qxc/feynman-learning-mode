@@ -22,6 +22,16 @@ TARGETS = {
         "project": Path(".dsh") / "skills",
         "codex_metadata": False,
     },
+    "zcode": {
+        "user": Path(".zcode") / "skills",
+        "project": Path(".zcode") / "skills",
+        "codex_metadata": False,
+    },
+    "kimi": {
+        "user": Path(".kimi") / "skills",
+        "project": Path(".kimi") / "skills",
+        "codex_metadata": False,
+    },
     "codebuddy": {
         "user": Path(".codebuddy") / "skills",
         "project": Path(".codebuddy") / "skills",

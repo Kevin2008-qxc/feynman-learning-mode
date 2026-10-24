@@ -76,6 +76,8 @@ class PortableSkillTests(unittest.TestCase):
         expected_roots = {
             "workbuddy": Path(".workbuddy") / "skills",
             "deepseek-harness": Path(".dsh") / "skills",
+            "zcode": Path(".zcode") / "skills",
+            "kimi": Path(".kimi") / "skills",
             "codebuddy": Path(".codebuddy") / "skills",
         }
         with tempfile.TemporaryDirectory() as temp_dir:
