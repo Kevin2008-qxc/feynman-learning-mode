@@ -35,9 +35,11 @@
 | 系统流程、因果链、反馈回路 | Mermaid 流程图 |
 | 两种或三种情况的关键区别 | 2–3 个小面板 |
 | 函数、切线、积分区域、向量、圆和几何构造 | 数学构图脚本 |
+| 医学机制、正常/异常对照、器官位置 | 医学结构示意或比较矩阵 |
+| 多个从属层级、章节结构、知识地图 | 思维导图渲染器 |
 | 无法绘图或只有少量离散值 | Markdown 表格或简洁文字示意 |
 
-若宿主可以执行本地脚本：数据比较读取 [chart-spec.md](chart-spec.md)，运行 `../scripts/render_chart.py`；数学构造读取 [math-figures.md](math-figures.md)，运行 `../scripts/render_math_figure.py`。检查实际生成的 PNG 后再展示。若只能渲染 Markdown，使用 Mermaid 或带坐标轴的文字示意；若连 Mermaid 也不能稳定显示，则使用表格。不要依赖外部 CDN、在线渲染服务或未声明的软件包。
+若宿主可以执行本地脚本：数据比较读取 [chart-spec.md](chart-spec.md)，运行 `../scripts/render_chart.py`；数学构造读取 [math-figures.md](math-figures.md)，运行 `../scripts/render_math_figure.py`；层级结构读取 [mindmaps.md](mindmaps.md)，运行 `../scripts/render_mindmap.py`。检查实际生成的 PNG 后再展示。若只能渲染 Markdown，使用 Mermaid 或文字示意；若连 Mermaid 也不能稳定显示，则使用表格。不要依赖外部 CDN、在线渲染服务或未声明的软件包。
 
 ## 图形质量
 

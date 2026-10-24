@@ -114,6 +114,7 @@ WorkBuddy → 专家 · 技能 · 连接器 → 技能
 - 根据理解断点自适应配图，不按轮次机械出图，也不重复绘制同一关系；
 - 函数、切线、极限误差带、积分区域、向量和圆可用本地数学构图引擎绘制，无需依赖 GeoGebra 在线服务；
 - 核心概念讲清后，只沿一个前置、辨析、后果、应用或边界关系向外延伸一步；
+- 医学、生物医学和相关化学主题会加载专门适配层，使用结构—功能—损伤—后果链条；
 - 结束模式后生成简短验收和迁移检查；
 - 遇到危险操作时暂停角色扮演，优先给出安全提醒。
 
@@ -178,13 +179,19 @@ feynman-learning-mode/
 │   ├── SKILL.md
 │   ├── agents/
 │   │   └── openai.yaml
+│   ├── assets/
+│   │   └── medical/
+│   │       └── immune-organs.svg
 │   ├── references/
 │   │   ├── chart-spec.md
 │   │   ├── math-figures.md
+│   │   ├── medical-concepts.md
+│   │   ├── mindmaps.md
 │   │   └── visual-hints.md
 │   └── scripts/
 │       ├── render_chart.py
-│       └── render_math_figure.py
+│       ├── render_math_figure.py
+│       └── render_mindmap.py
 ├── tests/
 │   ├── test_feynman_skill.py
 │   └── test_portability.py

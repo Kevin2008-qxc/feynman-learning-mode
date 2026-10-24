@@ -22,6 +22,12 @@ CHART_SPEC_TEXT = (SKILL_DIR / "references" / "chart-spec.md").read_text(
 MATH_FIGURE_TEXT = (SKILL_DIR / "references" / "math-figures.md").read_text(
     encoding="utf-8"
 )
+MEDICAL_TEXT = (SKILL_DIR / "references" / "medical-concepts.md").read_text(
+    encoding="utf-8"
+)
+MINDMAP_TEXT = (SKILL_DIR / "references" / "mindmaps.md").read_text(
+    encoding="utf-8"
+)
 
 
 class FeynmanSkillContractTests(unittest.TestCase):
@@ -126,6 +132,68 @@ class FeynmanSkillContractTests(unittest.TestCase):
         self.assertIn("\u82e5\u7528\u6237\u65e0\u6cd5\u8bf4\u660e\u8fde\u63a5", SKILL_TEXT)
         self.assertIn("\u4e0d\u81ea\u52a8\u5c55\u5f00\u8bfe\u7a0b", SKILL_TEXT)
 
+    def test_medical_adapter_has_safety_and_causal_structure(self) -> None:
+        self.assertIn("references/medical-concepts.md", SKILL_TEXT)
+        self.assertIn("\u7ed3\u6784\u2014\u529f\u80fd\u2014\u635f\u4f24\u2014\u540e\u679c", SKILL_TEXT)
+        self.assertIn("\u4e0d\u8fdb\u884c\u4e2a\u4eba\u8bca\u65ad", MEDICAL_TEXT)
+        self.assertIn("\u4e0d\u5f97\u51ed\u8bb0\u5fc6\u7f16\u9020", MEDICAL_TEXT)
+        self.assertIn("\u4e2d\u67a2/\u521d\u7ea7\u514d\u75ab\u5668\u5b98", MEDICAL_TEXT)
+        self.assertIn("\u5916\u5468/\u6b21\u7ea7\u514d\u75ab\u5668\u5b98", MEDICAL_TEXT)
+
+    def test_mindmap_renderer_builds_svg_and_mermaid(self) -> None:
+        renderer = SKILL_DIR / "scripts" / "render_mindmap.py"
+        self.assertIn("references/mindmaps.md", SKILL_TEXT)
+        self.assertIn("render_mindmap.py", SKILL_TEXT)
+        self.assertIn("\u56db\u5c42", MINDMAP_TEXT)
+        outline = (
+            "- 免疫系统\n"
+            "  - 中枢器官\n"
+            "    - 骨髓\n"
+            "    - 胸腺\n"
+            "  - 外周器官\n"
+            "    - 淋巴结\n"
+            "    - 脾\n"
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp = Path(temp_dir)
+            source = temp / "mindmap.md"
+            source.write_text(outline, encoding="utf-8")
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(renderer),
+                    str(source),
+                    "--out-dir",
+                    str(temp / "out"),
+                    "--no-render",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            svg = (temp / "out" / "mindmap.svg").read_text(encoding="utf-8")
+            mermaid = (temp / "out" / "mindmap.mmd").read_text(encoding="utf-8")
+            self.assertIn("免疫系统", svg)
+            self.assertIn("中枢器官", svg)
+            self.assertTrue(mermaid.startswith("mindmap\n"))
+            self.assertIn("胸腺", mermaid)
+
+    def test_immune_organ_diagram_is_present_and_labelled(self) -> None:
+        image = SKILL_DIR / "assets" / "medical" / "immune-organs.svg"
+        self.assertTrue(image.is_file())
+        svg = image.read_text(encoding="utf-8")
+        for label in (
+            "\u4eba\u4f53\u4e3b\u8981\u514d\u75ab\u5668\u5b98",
+            "\u9aa8\u9ad3",
+            "\u80f8\u817a",
+            "\u6dcb\u5df4\u7ed3",
+            "\u813e",
+            "\u6241\u6843\u4f53\u4e0e\u817a\u6837\u4f53",
+            "\u80a0\u9053\u76f8\u5173\u6dcb\u5df4\u7ec4\u7ec7",
+            "\u4e0d\u7528\u4e8e\u8bca\u65ad",
+        ):
+            self.assertIn(label, svg)
+
     def test_math_figure_renderer_supports_geometric_objects(self) -> None:
         renderer = SKILL_DIR / "scripts" / "render_math_figure.py"
         self.assertIn("render_math_figure.py", SKILL_TEXT)
@@ -216,7 +284,14 @@ class FeynmanSkillContractTests(unittest.TestCase):
         self.assertLess(len(SKILL_TEXT.splitlines()), 500)
 
     def test_publication_files_are_utf8_without_bom(self) -> None:
-        for path in (SKILL_DIR / "SKILL.md", SKILL_DIR / "agents" / "openai.yaml", Path(__file__)):
+        for path in (
+            SKILL_DIR / "SKILL.md",
+            SKILL_DIR / "agents" / "openai.yaml",
+            SKILL_DIR / "references" / "medical-concepts.md",
+            SKILL_DIR / "references" / "mindmaps.md",
+            SKILL_DIR / "assets" / "medical" / "immune-organs.svg",
+            Path(__file__),
+        ):
             raw = path.read_bytes()
             self.assertFalse(raw.startswith(b"\xef\xbb\xbf"), path)
             raw.decode("utf-8")

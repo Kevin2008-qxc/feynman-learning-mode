@@ -48,11 +48,15 @@ class PortableSkillTests(unittest.TestCase):
                     names,
                     [
                         "SKILL.md",
+                        "assets/medical/immune-organs.svg",
                         "references/chart-spec.md",
                         "references/math-figures.md",
+                        "references/medical-concepts.md",
+                        "references/mindmaps.md",
                         "references/visual-hints.md",
                         "scripts/render_chart.py",
                         "scripts/render_math_figure.py",
+                        "scripts/render_mindmap.py",
                     ],
                 )
                 self.assertNotIn("__pycache__", " ".join(names))
@@ -82,11 +86,15 @@ class PortableSkillTests(unittest.TestCase):
                     [
                         "SKILL.md",
                         "agents/openai.yaml",
+                        "assets/medical/immune-organs.svg",
                         "references/chart-spec.md",
                         "references/math-figures.md",
+                        "references/medical-concepts.md",
+                        "references/mindmaps.md",
                         "references/visual-hints.md",
                         "scripts/render_chart.py",
                         "scripts/render_math_figure.py",
+                        "scripts/render_mindmap.py",
                     ],
                 )
 
@@ -127,10 +135,27 @@ class PortableSkillTests(unittest.TestCase):
                         (target / "references" / "chart-spec.md").is_file()
                     )
                     self.assertTrue(
+                        (target / "references" / "medical-concepts.md").is_file()
+                    )
+                    self.assertTrue(
+                        (target / "references" / "mindmaps.md").is_file()
+                    )
+                    self.assertTrue(
+                        (
+                            target
+                            / "assets"
+                            / "medical"
+                            / "immune-organs.svg"
+                        ).is_file()
+                    )
+                    self.assertTrue(
                         (target / "scripts" / "render_chart.py").is_file()
                     )
                     self.assertTrue(
                         (target / "scripts" / "render_math_figure.py").is_file()
+                    )
+                    self.assertTrue(
+                        (target / "scripts" / "render_mindmap.py").is_file()
                     )
                     self.assertFalse((target / "agents" / "openai.yaml").exists())
 
