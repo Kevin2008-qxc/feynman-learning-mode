@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -25,6 +26,12 @@ MATH_FIGURE_TEXT = (SKILL_DIR / "references" / "math-figures.md").read_text(
 MEDICAL_TEXT = (SKILL_DIR / "references" / "medical-concepts.md").read_text(
     encoding="utf-8"
 )
+MEDICAL_MECHANISMS_TEXT = (
+    SKILL_DIR / "references" / "medical-mechanisms.md"
+).read_text(encoding="utf-8")
+MEDICAL_ATTRIBUTION_TEXT = (
+    SKILL_DIR / "assets" / "medical" / "ATTRIBUTION.md"
+).read_text(encoding="utf-8")
 MINDMAP_TEXT = (SKILL_DIR / "references" / "mindmaps.md").read_text(
     encoding="utf-8"
 )
@@ -134,17 +141,26 @@ class FeynmanSkillContractTests(unittest.TestCase):
 
     def test_medical_adapter_has_safety_and_causal_structure(self) -> None:
         self.assertIn("references/medical-concepts.md", SKILL_TEXT)
+        self.assertIn("references/medical-mechanisms.md", SKILL_TEXT)
         self.assertIn("\u7ed3\u6784\u2014\u529f\u80fd\u2014\u635f\u4f24\u2014\u540e\u679c", SKILL_TEXT)
         self.assertIn("\u4e0d\u8fdb\u884c\u4e2a\u4eba\u8bca\u65ad", MEDICAL_TEXT)
         self.assertIn("\u4e0d\u5f97\u51ed\u8bb0\u5fc6\u7f16\u9020", MEDICAL_TEXT)
         self.assertIn("\u4e2d\u67a2/\u521d\u7ea7\u514d\u75ab\u5668\u5b98", MEDICAL_TEXT)
         self.assertIn("\u5916\u5468/\u6b21\u7ea7\u514d\u75ab\u5668\u5b98", MEDICAL_TEXT)
+        self.assertIn("\u7cbe\u51c6\u6027\u5e95\u7ebf", MEDICAL_MECHANISMS_TEXT)
+        self.assertIn("\u533a\u5ba4", MEDICAL_MECHANISMS_TEXT)
+        self.assertIn("\u52a8\u4f5c\u8bed\u4e49", MEDICAL_MECHANISMS_TEXT)
+        self.assertIn("\u4e0d\u5f97\u590d\u5236\u5176\u56fe\u6807", MEDICAL_MECHANISMS_TEXT)
 
     def test_mindmap_renderer_builds_svg_and_mermaid(self) -> None:
         renderer = SKILL_DIR / "scripts" / "render_mindmap.py"
         self.assertIn("references/mindmaps.md", SKILL_TEXT)
         self.assertIn("render_mindmap.py", SKILL_TEXT)
         self.assertIn("\u56db\u5c42", MINDMAP_TEXT)
+        self.assertIn("\u57fa\u7840\u6982\u5ff5\u56fe\u4f18\u5148\u6a21\u677f", MINDMAP_TEXT)
+        self.assertIn("\u662f\u4ec0\u4e48", MINDMAP_TEXT)
+        self.assertIn("\u6761\u4ef6\u4e0e\u8fb9\u754c", MINDMAP_TEXT)
+        self.assertIn("\u6613\u6df7\u4e0e\u53cd\u4f8b", MINDMAP_TEXT)
         outline = (
             "- 免疫系统\n"
             "  - 中枢器官\n"
@@ -178,21 +194,34 @@ class FeynmanSkillContractTests(unittest.TestCase):
             self.assertTrue(mermaid.startswith("mindmap\n"))
             self.assertIn("胸腺", mermaid)
 
-    def test_immune_organ_diagram_is_present_and_labelled(self) -> None:
-        image = SKILL_DIR / "assets" / "medical" / "immune-organs.svg"
-        self.assertTrue(image.is_file())
-        svg = image.read_text(encoding="utf-8")
-        for label in (
-            "\u4eba\u4f53\u4e3b\u8981\u514d\u75ab\u5668\u5b98",
-            "\u9aa8\u9ad3",
-            "\u80f8\u817a",
-            "\u6dcb\u5df4\u7ed3",
-            "\u813e",
-            "\u6241\u6843\u4f53\u4e0e\u817a\u6837\u4f53",
-            "\u80a0\u9053\u76f8\u5173\u6dcb\u5df4\u7ec4\u7ec7",
-            "\u4e0d\u7528\u4e8e\u8bca\u65ad",
-        ):
-            self.assertIn(label, svg)
+    def test_medical_assets_are_licensed_and_traceable(self) -> None:
+        medical_root = SKILL_DIR / "assets" / "medical"
+        anatomy = medical_root / "openstax" / "lymphatic-system-anatomy.jpg"
+        self.assertTrue(anatomy.is_file())
+        self.assertTrue(anatomy.read_bytes().startswith(b"\xff\xd8\xff"))
+        self.assertFalse((medical_root / "immune-organs.svg").exists())
+
+        self.assertIn("CC BY 3.0", MEDICAL_ATTRIBUTION_TEXT)
+        self.assertIn("CC BY 4.0", MEDICAL_ATTRIBUTION_TEXT)
+        self.assertIn(
+            "No BioGDP",
+            (ROOT / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8"),
+        )
+
+        for filename, stable_id in {
+            "immune-system-overview.svg": "R-HSA-168256",
+            "innate-immune-system.svg": "R-HSA-168249",
+            "adaptive-immune-system.svg": "R-HSA-1280218",
+        }.items():
+            image = medical_root / "reactome" / filename
+            self.assertTrue(image.is_file())
+            svg = image.read_text(encoding="utf-8")
+            ET.fromstring(svg)
+            self.assertIn(f'id="{stable_id}"', svg)
+            self.assertGreater(len(svg), 400_000)
+            preview = image.with_suffix(".png")
+            self.assertTrue(preview.is_file())
+            self.assertTrue(preview.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
 
     def test_math_figure_renderer_supports_geometric_objects(self) -> None:
         renderer = SKILL_DIR / "scripts" / "render_math_figure.py"
@@ -287,9 +316,10 @@ class FeynmanSkillContractTests(unittest.TestCase):
         for path in (
             SKILL_DIR / "SKILL.md",
             SKILL_DIR / "agents" / "openai.yaml",
+            SKILL_DIR / "assets" / "medical" / "ATTRIBUTION.md",
             SKILL_DIR / "references" / "medical-concepts.md",
+            SKILL_DIR / "references" / "medical-mechanisms.md",
             SKILL_DIR / "references" / "mindmaps.md",
-            SKILL_DIR / "assets" / "medical" / "immune-organs.svg",
             Path(__file__),
         ):
             raw = path.read_bytes()

@@ -48,10 +48,18 @@ class PortableSkillTests(unittest.TestCase):
                     names,
                     [
                         "SKILL.md",
-                        "assets/medical/immune-organs.svg",
+                        "assets/medical/ATTRIBUTION.md",
+                        "assets/medical/openstax/lymphatic-system-anatomy.jpg",
+                        "assets/medical/reactome/adaptive-immune-system.png",
+                        "assets/medical/reactome/adaptive-immune-system.svg",
+                        "assets/medical/reactome/immune-system-overview.png",
+                        "assets/medical/reactome/immune-system-overview.svg",
+                        "assets/medical/reactome/innate-immune-system.png",
+                        "assets/medical/reactome/innate-immune-system.svg",
                         "references/chart-spec.md",
                         "references/math-figures.md",
                         "references/medical-concepts.md",
+                        "references/medical-mechanisms.md",
                         "references/mindmaps.md",
                         "references/visual-hints.md",
                         "scripts/render_chart.py",
@@ -86,10 +94,18 @@ class PortableSkillTests(unittest.TestCase):
                     [
                         "SKILL.md",
                         "agents/openai.yaml",
-                        "assets/medical/immune-organs.svg",
+                        "assets/medical/ATTRIBUTION.md",
+                        "assets/medical/openstax/lymphatic-system-anatomy.jpg",
+                        "assets/medical/reactome/adaptive-immune-system.png",
+                        "assets/medical/reactome/adaptive-immune-system.svg",
+                        "assets/medical/reactome/immune-system-overview.png",
+                        "assets/medical/reactome/immune-system-overview.svg",
+                        "assets/medical/reactome/innate-immune-system.png",
+                        "assets/medical/reactome/innate-immune-system.svg",
                         "references/chart-spec.md",
                         "references/math-figures.md",
                         "references/medical-concepts.md",
+                        "references/medical-mechanisms.md",
                         "references/mindmaps.md",
                         "references/visual-hints.md",
                         "scripts/render_chart.py",
@@ -138,6 +154,9 @@ class PortableSkillTests(unittest.TestCase):
                         (target / "references" / "medical-concepts.md").is_file()
                     )
                     self.assertTrue(
+                        (target / "references" / "medical-mechanisms.md").is_file()
+                    )
+                    self.assertTrue(
                         (target / "references" / "mindmaps.md").is_file()
                     )
                     self.assertTrue(
@@ -145,7 +164,17 @@ class PortableSkillTests(unittest.TestCase):
                             target
                             / "assets"
                             / "medical"
-                            / "immune-organs.svg"
+                            / "openstax"
+                            / "lymphatic-system-anatomy.jpg"
+                        ).is_file()
+                    )
+                    self.assertTrue(
+                        (
+                            target
+                            / "assets"
+                            / "medical"
+                            / "reactome"
+                            / "immune-system-overview.png"
                         ).is_file()
                     )
                     self.assertTrue(
@@ -176,6 +205,33 @@ class PortableSkillTests(unittest.TestCase):
             result = subprocess.run(command, capture_output=True, text=True)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("--force", result.stderr)
+            installed_root = project / ".codebuddy" / "skills" / "feynman"
+            (installed_root / "obsolete.txt").write_text(
+                "must be removed on update",
+                encoding="utf-8",
+            )
+            obsolete_dir = installed_root / "obsolete-dir"
+            obsolete_dir.mkdir()
+            (obsolete_dir / "stale.txt").write_text("stale", encoding="utf-8")
+            result = subprocess.run(
+                [*command, "--force"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertFalse((installed_root / "obsolete.txt").exists())
+            self.assertFalse(obsolete_dir.exists())
+            self.assertTrue(
+                (
+                    installed_root
+                    / "SKILL.md"
+                ).is_file()
+            )
+            self.assertEqual(
+                list((project / ".codebuddy" / "skills").glob(".feynman-backup-*")),
+                [],
+            )
 
 
 if __name__ == "__main__":

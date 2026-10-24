@@ -322,8 +322,8 @@ def _build_svg(root: MindNode, theme_name: str, width: float) -> tuple[str, floa
         f'<rect x="0" y="0" width="{width:.0f}" height="{height:.0f}" fill="{theme["page"]}"/>',
         f'<rect x="18" y="18" width="{width - 36:.0f}" height="{height - 36:.0f}" rx="22" '
         f'fill="{theme["card"]}" stroke="{theme["border"]}"/>',
-        f'<text x="44" y="54" fill="{theme["muted"]}" font-family="{_esc(MONO)}" '
-        f'font-size="11">CONCEPT MAP</text>',
+        f'<text x="44" y="54" fill="{theme["muted"]}" '
+        f'font-size="11">概念图</text>',
     ]
 
     for parent, child in edges:

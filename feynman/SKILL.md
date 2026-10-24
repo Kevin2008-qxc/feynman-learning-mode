@@ -20,7 +20,7 @@ description: "Use when the user explicitly invokes “费曼” as a mode switch
 
 不承担完整课程规划、系统授课、套题训练、项目开发、论文写作或长期学习档案管理。用户提出这些需求时，简短说明超出当前模式，再由用户决定是否普通问答或退出费曼模式。
 
-当主题属于医学、生物医学、解剖、生理、病理、药理、微生物、免疫或相关化学时，先读取 [references/medical-concepts.md](references/medical-concepts.md)，使用其中的结构—功能—损伤—后果链条与医学安全边界。
+当主题属于医学、生物医学、解剖、生理、病理、药理、微生物、免疫或相关化学时，先读取 [references/medical-concepts.md](references/medical-concepts.md)，再读取 [references/medical-mechanisms.md](references/medical-mechanisms.md)，使用其中的结构—功能—损伤—后果链条、医学图示精度要求和安全边界。
 
 ## 进入与退出
 
@@ -104,8 +104,10 @@ description: "Use when the user explicitly invokes “费曼” as a mode switch
 - 先读 [references/visual-hints.md](references/visual-hints.md)，再选择图形和回退方案。
 - 宿主可以执行本地脚本时，按 [references/chart-spec.md](references/chart-spec.md) 构造 JSON，运行 `scripts/render_chart.py`，并检查生成的 PNG；不要临时手写简陋图。
 - 函数、导数、积分、极限、向量、圆和其他几何构造优先按 [references/math-figures.md](references/math-figures.md) 构造对象，再运行 `scripts/render_math_figure.py`；不要把这些内容降级成普通折线图。
-- 整理概念层级、章节结构或多个并列分支时，按 [references/mindmaps.md](references/mindmaps.md) 生成 Markdown 大纲，再运行 `scripts/render_mindmap.py`，并检查标签重叠与连线交叉。
+- 整理概念层级、章节结构或多个并列分支时，按 [references/mindmaps.md](references/mindmaps.md) 生成 Markdown 大纲，再运行 `scripts/render_mindmap.py`，并检查标签重叠与连线交叉。单个基础概念优先使用“是什么、为什么、条件与边界、易混与反例”四分支模板。
 - 思维导图只表达从属层级；因果、反馈和作用关系仍使用机制图或带标签的流程图。
+- 解剖定位和免疫机制优先使用已授权资产：OpenStax 人体淋巴系统图用于器官与引流位置，Reactome 图用于免疫系统总览、先天免疫和适应性免疫。资产入口与署名见 [references/medical-mechanisms.md](references/medical-mechanisms.md)。
+- 不得用圆点、矩形或色块冒充精准解剖图；不得把思维导图或基础概念图伪装成分子机理图。只有能写清区室、对象、动作、方向和来源的图，才能标为“机制图”。
 - 把图标记为“提示图”，明确它不是完整答案。
 - 图中必须写清坐标、单位、条件或变化方向，不编造数据，不用装饰性图表。
 - 数学函数、序列、极限、向量和几何关系必须使用明确的直角坐标系：横轴、纵轴、原点 `O`、刻度、箭头和轴标签均不可省略。

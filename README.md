@@ -181,11 +181,21 @@ feynman-learning-mode/
 │   │   └── openai.yaml
 │   ├── assets/
 │   │   └── medical/
-│   │       └── immune-organs.svg
+│   │       ├── ATTRIBUTION.md
+│   │       ├── openstax/
+│   │       │   └── lymphatic-system-anatomy.jpg
+│   │       └── reactome/
+│   │           ├── immune-system-overview.svg
+│   │           ├── immune-system-overview.png
+│   │           ├── innate-immune-system.svg
+│   │           ├── innate-immune-system.png
+│   │           ├── adaptive-immune-system.svg
+│   │           └── adaptive-immune-system.png
 │   ├── references/
 │   │   ├── chart-spec.md
 │   │   ├── math-figures.md
 │   │   ├── medical-concepts.md
+│   │   ├── medical-mechanisms.md
 │   │   ├── mindmaps.md
 │   │   └── visual-hints.md
 │   └── scripts/
@@ -216,4 +226,4 @@ feynman-learning-mode/
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) 覆盖本项目原创代码与文档。`feynman/assets/medical/` 下的医学图像保留原许可：OpenStax 解剖图为 CC BY 3.0，Reactome 通路图为 CC BY 4.0。完整来源、署名和修改记录见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 与 [医学资产署名](feynman/assets/medical/ATTRIBUTION.md)。本仓库不包含 BioGDP 原图或模板。

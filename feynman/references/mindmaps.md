@@ -28,6 +28,34 @@
 - 如果两个概念之间不是从属关系，而是一条因果或作用关系，改用机制图或带标签的流程图；
 - 导图根据用户已经讲过的内容生成，不擅自扩展成整章知识清单。
 
+## 基础概念图优先模板
+
+单个基础概念默认只画四个主分支：
+
+```markdown
+- 核心概念
+  - 是什么
+    - 核心对象
+    - 一句话定义
+  - 为什么
+    - 核心机制
+    - 因果关系
+  - 条件与边界
+    - 成立前提
+    - 容易失效的地方
+  - 易混与反例
+    - 最接近的概念
+    - 一个反例
+```
+
+使用要求：
+
+- 四个主分支顺序固定，便于跨主题复习和比较；
+- 每个主分支下只放 1–3 个关键词；
+- 基础概念图不再继续嵌套更深的细节；
+- 复杂器官系统、疾病分类等知识地图可以使用更多主分支，但仍遵守总深度限制；
+- 用户尚未讲到的分支不要擅自补满，可留作下一轮追问。
+
 ## 视觉规则
 
 - 一级分支各有固定颜色，后代继承同一颜色；
@@ -68,7 +96,7 @@ mindmap.mmd
 
 ## 设计与研究依据
 
-- Mermaid 的缩进式 Mindmap 语法与 `mindmap.mmd` 兼容；
-- Markmap 证明 Markdown 大纲可以自然映射为可折叠知识树；
-- Graphviz 的分层布局用于约束层距、减少交叉和自动计算节点位置；
-- 医学教育研究建议限制主分支数量、关键词长度和层级深度，以降低认知负荷。
+- [Mermaid Mindmap](https://mermaid.ai/open-source/syntax/mindmap.html)：采用缩进式层级，并输出兼容的 `mindmap.mmd`；
+- [Markmap](https://markmap.js.org/docs/markmap)：采用 Markdown 大纲作为自然输入；
+- [Graphviz dot](https://graphviz.org/docs/layouts/dot/)：借鉴分层布局和减少连线交叉的规则；
+- [医学教育思维导图研究](https://www.facs.org/for-medical-professionals/news-publications/journals/rise/articles/cognitive/)：限制主分支数量、关键词长度和层级深度，以降低认知负荷。

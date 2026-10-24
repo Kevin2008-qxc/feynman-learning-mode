@@ -55,6 +55,17 @@ def resolve_target(host: str, scope: str, project_dir: Path) -> Path:
     return base / config[scope] / SKILL_NAME
 
 
+def clear_directory(directory: Path) -> None:
+    """Remove a Skill's old contents without renaming its loaded root."""
+    for child in directory.iterdir():
+        if child.is_symlink() or child.is_file():
+            child.unlink()
+        elif child.is_dir():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+
+
 def copy_skill(
     source: Path,
     target: Path,
@@ -95,18 +106,21 @@ def copy_skill(
     if target.exists():
         if target.name != SKILL_NAME:
             raise ValueError(f"Refusing to replace unexpected target: {target}")
+        if target.is_symlink():
+            raise ValueError(f"Refusing to replace symbolic-link target: {target}")
         backup = target.with_name(f".{SKILL_NAME}-backup-{os.getpid()}")
         if backup.exists():
             raise FileExistsError(f"Temporary backup already exists: {backup}")
-        os.replace(target, backup)
+        shutil.copytree(target, backup)
 
     try:
-        shutil.copytree(source, target, ignore=ignore)
-    except Exception:
-        if target.exists():
-            shutil.rmtree(target)
         if backup is not None:
-            os.replace(backup, target)
+            clear_directory(target)
+        shutil.copytree(source, target, ignore=ignore, dirs_exist_ok=True)
+    except Exception:
+        if backup is not None and target.exists():
+            clear_directory(target)
+            shutil.copytree(backup, target, dirs_exist_ok=True)
         raise
     else:
         if backup is not None:

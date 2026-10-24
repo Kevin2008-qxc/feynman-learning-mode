@@ -35,11 +35,13 @@
 | 系统流程、因果链、反馈回路 | Mermaid 流程图 |
 | 两种或三种情况的关键区别 | 2–3 个小面板 |
 | 函数、切线、积分区域、向量、圆和几何构造 | 数学构图脚本 |
-| 医学机制、正常/异常对照、器官位置 | 医学结构示意或比较矩阵 |
+| 器官位置、毗邻和淋巴回流 | OpenStax 解剖资产 |
+| 免疫信号、细胞互作和分子通路 | Reactome 机制资产 |
+| 医学正常/异常对照、药物机制 | 带动作标签的机制图或比较矩阵 |
 | 多个从属层级、章节结构、知识地图 | 思维导图渲染器 |
 | 无法绘图或只有少量离散值 | Markdown 表格或简洁文字示意 |
 
-若宿主可以执行本地脚本：数据比较读取 [chart-spec.md](chart-spec.md)，运行 `../scripts/render_chart.py`；数学构造读取 [math-figures.md](math-figures.md)，运行 `../scripts/render_math_figure.py`；层级结构读取 [mindmaps.md](mindmaps.md)，运行 `../scripts/render_mindmap.py`。检查实际生成的 PNG 后再展示。若只能渲染 Markdown，使用 Mermaid 或文字示意；若连 Mermaid 也不能稳定显示，则使用表格。不要依赖外部 CDN、在线渲染服务或未声明的软件包。
+若宿主可以执行本地脚本：数据比较读取 [chart-spec.md](chart-spec.md)，运行 `../scripts/render_chart.py`；数学构造读取 [math-figures.md](math-figures.md)，运行 `../scripts/render_math_figure.py`；层级结构读取 [mindmaps.md](mindmaps.md)，运行 `../scripts/render_mindmap.py`；医学解剖与机制读取 [medical-mechanisms.md](medical-mechanisms.md)。检查实际生成的 PNG 后再展示。若只能渲染 Markdown，使用 Mermaid 或文字示意；若连 Mermaid 也不能稳定显示，则使用表格。不要依赖外部 CDN、在线渲染服务或未声明的软件包。
 
 ## 图形质量
 
@@ -49,6 +51,8 @@
 - 数学图必须同时标出横轴、纵轴、原点 `O`、箭头和轴标签，不能只画一条底部时间轴。
 - 标签和刻度必须清晰，不能裁切最长标签。
 - 颜色不能是唯一编码，同时使用形状、线型或文字。
+- 医学机制图必须能回答“谁作用于谁、发生在哪个区室、箭头代表什么动作、证据来自哪里”；缺一项就要降级为明确的示意图。
+- 不用圆点、矩形或装饰性色块冒充解剖器官；不把思维导图当作通路机制图。
 - 不符合零基线的图不得随意截断坐标轴；若必须截断，明确标注。
 - 比较多个量时，先统一单位或在图中写明归一化公式。
 - 图中没有真实数据时应写“示意图”，不能伪装成测量结果。
